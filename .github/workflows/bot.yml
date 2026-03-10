@@ -18,7 +18,7 @@ jobs:
 
       - run: npm install
 
-      - run: node index.js
+      - run: npm start
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
