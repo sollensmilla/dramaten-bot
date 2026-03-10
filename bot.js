@@ -10,45 +10,52 @@ const CHAT_ID = process.env.CHAT_ID;
 const bot = new TelegramBot(TOKEN, { polling: false });
 
 const url =
-  "https://ticket-api.dramaten.se/api/v1/performances?StartDate=2026-03-10&EndDate=2026-12-31";
+    "https://ticket-api.dramaten.se/api/v1/performances?StartDate=2026-03-10&EndDate=2026-12-31";
+
+let lastStatus = {};
 
 async function checkTickets() {
-  try {
-    console.log("🔄 Kollar biljetter...");
+    try {
+        console.log("🔄 Kollar biljetter...");
 
-    const res = await axios.get(url);
-    console.log("✅ API svar mottaget");
+        const res = await axios.get(url);
+        console.log("✅ API svar mottaget");
 
-    const shows = res.data.data.filter(
-      (s) => s.title.toLowerCase().includes("fäbodjäntan")
-    );
+        const shows = res.data.data.filter(
+            (s) => s.title.toLowerCase().includes("fäbodjäntan")
+        );
 
-    for (const show of shows) {
-      const status = show.availabilityStatus;
+        for (const show of shows) {
+            const key = show.startDate;
+            const status = show.availabilityStatus;
 
-      if (status !== "sold-out") {
-        const date = new Date(show.startDate).toLocaleString("sv-SE");
+            if (lastStatus[key] !== status) {
+                console.log(`⚠️ Statusändring upptäckt: ${status} (${show.startDate})`);
+                lastStatus[key] = status;
 
-        const msg = `🎟️ Biljetter till Fäbodjäntan!
+                if (status !== "sold-out") {
+                    const date = new Date(show.startDate).toLocaleString("sv-SE");
+                    const msg =
+                        `🎟️ Biljetter till Fäbodjäntan!
 
 Datum: ${date}
 Status: ${status}
-Pris: ${show.price ?? "N/A"} kr
+Pris: ${show.price} kr
 
 Köp biljett:
 https://www.dramaten.se/biljetter/forestallningar/fabodjantan/`;
-
-        try {
-          await bot.sendMessage(CHAT_ID, msg);
-          console.log("📲 NOTIS SKICKAD");
-        } catch (err) {
-          console.error("❌ Telegram-fel:", err.response?.data || err.message);
+                    try {
+                        await bot.sendMessage(CHAT_ID, msg);
+                        console.log("📲 NOTIS SKICKAD");
+                    } catch (err) {
+                        console.error("❌ Telegram-fel:", err.response?.data || err.message);
+                    }
+                }
+            }
         }
-      }
+    } catch (err) {
+        console.error("❌ API-fel:", err.message);
     }
-  } catch (err) {
-    console.error("❌ API-fel:", err.message);
-  }
 }
-
 checkTickets();
+setInterval(checkTickets, 15000);
