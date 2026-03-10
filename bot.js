@@ -35,15 +35,14 @@ async function checkTickets() {
 
                 if (status !== "sold-out") {
                     const date = new Date(show.startDate).toLocaleString("sv-SE");
+
+                    const eventId = show.id;
+                    const seasonId = show.productionSeason.id;
+
+                    const ticketLink = `https://biljetter.dramaten.se/events/${seasonId}/${eventId}/price-selection`;
+
                     const msg =
-                        `🎟️ Biljetter till Fäbodjäntan!
-
-Datum: ${date}
-Status: ${status}
-Pris: ${show.price} kr
-
-Köp biljett:
-https://www.dramaten.se/biljetter/forestallningar/fabodjantan/`;
+                        `🎟️ Biljetter till Fäbodjäntan!\n\nDatum: ${date}\nStatus: ${status}\nPris: ${show.price} kr\n\nKöp biljett: ${ticketLink}`;
                     try {
                         await bot.sendMessage(CHAT_ID, msg);
                         console.log("📲 NOTIS SKICKAD");
