@@ -58,4 +58,3 @@ https://www.dramaten.se/biljetter/forestallningar/fabodjantan/`;
     }
 }
 checkTickets();
-setInterval(checkTickets, 15000);
