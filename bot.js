@@ -26,12 +26,7 @@ async function checkTickets() {
         );
 
         for (const show of shows) {
-            const key = show.startDate;
             const status = show.availabilityStatus;
-
-            if (lastStatus[key] !== status) {
-                console.log(`⚠️ Statusändring upptäckt: ${status} (${show.startDate})`);
-                lastStatus[key] = status;
 
                 if (status !== "sold-out") {
                     const date = new Date(show.startDate).toLocaleString("sv-SE");
