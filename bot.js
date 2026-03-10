@@ -57,4 +57,4 @@ async function checkTickets() {
     }
 }
 checkTickets();
-setInterval(checkTickets, 15000);
+setInterval(checkTickets, 60000); 
